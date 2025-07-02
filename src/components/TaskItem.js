@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
 
-const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
+const TaskItem = ({ task, onUpdateTask, onDeleteTask, searchQuery }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
+
+  // Function to highlight search terms
+  const highlightSearchTerm = (text, searchTerm) => {
+    if (!searchTerm || !searchTerm.trim()) {
+      return text;
+    }
+
+    const regex = new RegExp(`(${searchTerm.trim()})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      regex.test(part) ? 
+        <mark key={index} className="search-highlight">{part}</mark> : 
+        part
+    );
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -92,14 +108,18 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask }) => {
     <div className={`task-item ${task.completed ? 'completed' : 'pending'}`}>
       <div className="task-content">
         <div className="task-header">
-          <h3 className="task-title">{task.title}</h3>
+          <h3 className="task-title">
+            {highlightSearchTerm(task.title, searchQuery)}
+          </h3>
           <span className={`task-status ${task.completed ? 'completed' : 'pending'}`}>
             {task.completed ? 'Completed' : 'Pending'}
           </span>
         </div>
         
         {task.description && (
-          <p className="task-description">{task.description}</p>
+          <p className="task-description">
+            {highlightSearchTerm(task.description, searchQuery)}
+          </p>
         )}
         
         <div className="task-meta">

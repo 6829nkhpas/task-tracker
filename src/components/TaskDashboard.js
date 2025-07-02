@@ -2,8 +2,21 @@ import React from 'react';
 import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import TaskFilter from './TaskFilter';
+import SearchBar from './SearchBar';
 
-const TaskDashboard = ({ user, onLogout, tasks, onAddTask, onUpdateTask, onDeleteTask }) => {
+const TaskDashboard = ({ 
+  user, 
+  onLogout, 
+  tasks, 
+  filteredTasks,
+  onAddTask, 
+  onUpdateTask, 
+  onDeleteTask,
+  currentFilter,
+  onFilterChange,
+  searchQuery,
+  onSearchChange
+}) => {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -21,11 +34,27 @@ const TaskDashboard = ({ user, onLogout, tasks, onAddTask, onUpdateTask, onDelet
       <main className="dashboard-main">
         <div className="dashboard-content">
           <TaskForm onAddTask={onAddTask} />
-          <TaskFilter tasks={tasks} />
+          
+          <div className="controls-section">
+            <SearchBar 
+              searchQuery={searchQuery}
+              onSearchChange={onSearchChange}
+              totalTasks={tasks.length}
+              filteredCount={filteredTasks.length}
+            />
+            <TaskFilter 
+              tasks={tasks}
+              currentFilter={currentFilter}
+              onFilterChange={onFilterChange}
+            />
+          </div>
+          
           <TaskList 
-            tasks={tasks} 
+            tasks={filteredTasks} 
             onUpdateTask={onUpdateTask} 
-            onDeleteTask={onDeleteTask} 
+            onDeleteTask={onDeleteTask}
+            currentFilter={currentFilter}
+            searchQuery={searchQuery}
           />
         </div>
       </main>

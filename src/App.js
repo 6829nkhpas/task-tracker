@@ -8,6 +8,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentFilter, setCurrentFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -31,6 +33,9 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('taskTrackerUser');
     setUser(null);
+    // Reset filters when logging out
+    setCurrentFilter('all');
+    setSearchQuery('');
   };
 
   const handleAddTask = (taskData) => {
@@ -56,6 +61,44 @@ function App() {
     return false;
   };
 
+  const handleFilterChange = (filter) => {
+    setCurrentFilter(filter);
+  };
+
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+  };
+
+  // Filter and search logic
+  const getFilteredTasks = () => {
+    let filteredTasks = [...tasks];
+
+    // Apply filter
+    switch (currentFilter) {
+      case 'completed':
+        filteredTasks = filteredTasks.filter(task => task.completed);
+        break;
+      case 'pending':
+        filteredTasks = filteredTasks.filter(task => !task.completed);
+        break;
+      case 'all':
+      default:
+        // No filtering needed
+        break;
+    }
+
+    // Apply search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filteredTasks = filteredTasks.filter(task => 
+        task.title.toLowerCase().includes(query) ||
+        task.description.toLowerCase().includes(query)
+      );
+    }
+
+    return filteredTasks;
+  };
+
   if (isLoading) {
     return <div className="loading">Loading...</div>;
   }
@@ -69,9 +112,14 @@ function App() {
           user={user} 
           onLogout={handleLogout}
           tasks={tasks}
+          filteredTasks={getFilteredTasks()}
           onAddTask={handleAddTask}
           onUpdateTask={handleUpdateTask}
           onDeleteTask={handleDeleteTask}
+          currentFilter={currentFilter}
+          onFilterChange={handleFilterChange}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
         />
       )}
     </div>
