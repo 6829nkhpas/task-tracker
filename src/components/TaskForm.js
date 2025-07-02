@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
-const TaskForm = () => {
+const TaskForm = ({ onAddTask }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!title.trim()) {
@@ -12,12 +13,33 @@ const TaskForm = () => {
       return;
     }
 
-    // TODO: Add task creation logic in Phase 2
-    console.log('Task to be created:', { title, description });
-    
-    // Reset form
-    setTitle('');
-    setDescription('');
+    if (title.trim().length > 100) {
+      alert('Task title must be less than 100 characters');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const taskData = {
+        title: title.trim(),
+        description: description.trim()
+      };
+
+      onAddTask(taskData);
+      
+      // Reset form
+      setTitle('');
+      setDescription('');
+      
+      // Show success message
+      alert('Task added successfully!');
+    } catch (error) {
+      console.error('Error adding task:', error);
+      alert('Failed to add task. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -32,8 +54,11 @@ const TaskForm = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter task title"
+            maxLength="100"
             required
+            disabled={isSubmitting}
           />
+          <small className="char-count">{title.length}/100</small>
         </div>
 
         <div className="form-group">
@@ -44,11 +69,18 @@ const TaskForm = () => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter task description (optional)"
             rows="3"
+            maxLength="500"
+            disabled={isSubmitting}
           />
+          <small className="char-count">{description.length}/500</small>
         </div>
 
-        <button type="submit" className="add-task-button">
-          Add Task
+        <button 
+          type="submit" 
+          className="add-task-button"
+          disabled={isSubmitting || !title.trim()}
+        >
+          {isSubmitting ? 'Adding...' : 'Add Task'}
         </button>
       </form>
     </div>

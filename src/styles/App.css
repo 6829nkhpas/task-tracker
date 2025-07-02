@@ -220,6 +220,41 @@ body {
   background: #218838;
 }
 
+/* Character count styles */
+.char-count {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.add-task-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Task statistics */
+.task-stats {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.task-stats p {
+  color: #333;
+  font-size: 14px;
+  margin: 0;
+  font-weight: 500;
+}
+
 /* Task Filter Styles */
 .task-filter-container {
   background: white;
@@ -281,7 +316,19 @@ body {
   color: #666;
   font-size: 16px;
   padding: 40px;
+}
+
+.no-tasks p {
+  margin: 10px 0;
+}
+
+.no-tasks p:first-child {
   font-style: italic;
+}
+
+.no-tasks p:last-child {
+  font-size: 24px;
+  margin-top: 20px;
 }
 
 .task-list {
@@ -297,16 +344,25 @@ body {
   padding: 20px;
   background: white;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .task-item:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .task-item.completed {
   background: #f8f9fa;
-  opacity: 0.8;
+  opacity: 0.85;
+}
+
+.task-item.completed:hover {
+  opacity: 1;
+}
+
+.task-item.editing {
+  border-color: #667eea;
+  background: #f8f9ff;
 }
 
 .task-content {
@@ -402,6 +458,83 @@ body {
 
 .delete-button:hover {
   background: #c82333;
+}
+
+/* Task editing styles */
+.task-edit-form {
+  width: 100%;
+}
+
+.task-edit-form .form-group {
+  margin-bottom: 15px;
+}
+
+.task-edit-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.edit-input,
+.edit-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e1e1e1;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.edit-input:focus,
+.edit-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.save-button {
+  padding: 8px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background: #218838;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-button:hover {
+  background: #5a6268;
 }
 
 /* Responsive Design */

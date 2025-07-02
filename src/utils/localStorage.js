@@ -67,3 +67,39 @@ export const clearAllTasks = () => {
   localStorage.removeItem(STORAGE_KEYS.TASKS);
   return true;
 };
+
+// Sample tasks for demonstration (only added if no tasks exist)
+export const initializeSampleTasks = () => {
+  const existingTasks = getTasks();
+  
+  if (existingTasks.length === 0) {
+    const sampleTasks = [
+      {
+        id: 1,
+        title: "Complete React assignment",
+        description: "Build a task tracker application with all required features",
+        completed: false,
+        createdAt: "2025-07-02T10:00:00Z"
+      },
+      {
+        id: 2,
+        title: "Review JavaScript concepts",
+        description: "Go through ES6+ features and modern JavaScript practices",
+        completed: true,
+        createdAt: "2025-07-01T15:30:00Z"
+      },
+      {
+        id: 3,
+        title: "Setup development environment",
+        description: "Install Node.js, VS Code extensions, and configure Git",
+        completed: true,
+        createdAt: "2025-06-30T09:15:00Z"
+      }
+    ];
+    
+    saveTasks(sampleTasks);
+    return sampleTasks;
+  }
+  
+  return existingTasks;
+};

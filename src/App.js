@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import TaskDashboard from './components/TaskDashboard';
+import { addTask, updateTask, deleteTask, initializeSampleTasks } from './utils/localStorage';
 import './styles/App.css';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -13,6 +15,11 @@ function App() {
     if (storedUser) {
       setUser(storedUser);
     }
+    
+    // Load tasks from localStorage (with sample data if none exist)
+    const storedTasks = initializeSampleTasks();
+    setTasks(storedTasks);
+    
     setIsLoading(false);
   }, []);
 
@@ -26,6 +33,29 @@ function App() {
     setUser(null);
   };
 
+  const handleAddTask = (taskData) => {
+    const newTask = addTask(taskData);
+    setTasks(prevTasks => [...prevTasks, newTask]);
+    return newTask;
+  };
+
+  const handleUpdateTask = (taskId, updates) => {
+    const updatedTask = updateTask(taskId, updates);
+    setTasks(prevTasks => prevTasks.map(task => 
+      task.id === taskId ? updatedTask : task
+    ));
+    return updatedTask;
+  };
+
+  const handleDeleteTask = (taskId) => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      deleteTask(taskId);
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+      return true;
+    }
+    return false;
+  };
+
   if (isLoading) {
     return <div className="loading">Loading...</div>;
   }
@@ -35,7 +65,14 @@ function App() {
       {!user ? (
         <Login onLogin={handleLogin} />
       ) : (
-        <TaskDashboard user={user} onLogout={handleLogout} />
+        <TaskDashboard 
+          user={user} 
+          onLogout={handleLogout}
+          tasks={tasks}
+          onAddTask={handleAddTask}
+          onUpdateTask={handleUpdateTask}
+          onDeleteTask={handleDeleteTask}
+        />
       )}
     </div>
   );

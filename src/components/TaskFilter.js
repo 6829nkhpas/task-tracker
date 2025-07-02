@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
-const TaskFilter = () => {
+const TaskFilter = ({ tasks }) => {
   const [activeFilter, setActiveFilter] = useState('all');
 
+  const taskCounts = useMemo(() => {
+    if (!tasks) {
+      return { all: 0, pending: 0, completed: 0 };
+    }
+
+    const completed = tasks.filter(task => task.completed).length;
+    const pending = tasks.filter(task => !task.completed).length;
+    
+    return {
+      all: tasks.length,
+      pending,
+      completed
+    };
+  }, [tasks]);
+
   const filters = [
-    { key: 'all', label: 'All', count: 5 },
-    { key: 'pending', label: 'Pending', count: 3 },
-    { key: 'completed', label: 'Completed', count: 2 }
+    { key: 'all', label: 'All', count: taskCounts.all },
+    { key: 'pending', label: 'Pending', count: taskCounts.pending },
+    { key: 'completed', label: 'Completed', count: taskCounts.completed }
   ];
 
   return (
     <div className="task-filter-container">
-      <h2>Filter Tasks</h2>
+      <h2>Task Overview</h2>
       <div className="filter-buttons">
         {filters.map(filter => (
           <button
@@ -23,6 +38,14 @@ const TaskFilter = () => {
           </button>
         ))}
       </div>
+      {taskCounts.all > 0 && (
+        <div className="task-stats">
+          <p>
+            Progress: {taskCounts.completed} of {taskCounts.all} tasks completed 
+            ({taskCounts.all > 0 ? Math.round((taskCounts.completed / taskCounts.all) * 100) : 0}%)
+          </p>
+        </div>
+      )}
     </div>
   );
 };

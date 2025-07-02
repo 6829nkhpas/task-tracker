@@ -3,7 +3,7 @@ import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import TaskFilter from './TaskFilter';
 
-const TaskDashboard = ({ user, onLogout }) => {
+const TaskDashboard = ({ user, onLogout, tasks, onAddTask, onUpdateTask, onDeleteTask }) => {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -20,9 +20,13 @@ const TaskDashboard = ({ user, onLogout }) => {
 
       <main className="dashboard-main">
         <div className="dashboard-content">
-          <TaskForm />
-          <TaskFilter />
-          <TaskList />
+          <TaskForm onAddTask={onAddTask} />
+          <TaskFilter tasks={tasks} />
+          <TaskList 
+            tasks={tasks} 
+            onUpdateTask={onUpdateTask} 
+            onDeleteTask={onDeleteTask} 
+          />
         </div>
       </main>
     </div>
