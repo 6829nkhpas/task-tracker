@@ -11,6 +11,9 @@
 # production
 /build
 
+/naman
+/naman.pub
+
 # misc
 .DS_Store
 .env.local
