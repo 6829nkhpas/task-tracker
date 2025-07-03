@@ -70,6 +70,7 @@ A modern, sleek personal task management application built with React featuring 
 - **Effects**: Glassmorphism with backdrop blur and subtle shadows
 
 ++Live link
+https://modern-task-shedular.netlify.app/
 
 ++ Screenshorts
 
