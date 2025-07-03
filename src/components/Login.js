@@ -24,6 +24,9 @@ const Login = ({ onLogin }) => {
   return (
     <div className="login-container">
       <div className="login-card">
+        <div className="login-logo">
+          ✨
+        </div>
         <h1>Personal Task Tracker</h1>
         <p>Welcome! Please enter your username to continue.</p>
         

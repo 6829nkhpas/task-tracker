@@ -26,7 +26,7 @@ const TaskDashboard = ({
         <div className="header-content">
           <h1>Task Tracker</h1>
           <div className="user-info">
-            <span>Welcome, {user}!</span>
+            <span className="user-welcome">Welcome, {user}!</span>
             <button onClick={onLogout} className="logout-button">
               Logout
             </button>

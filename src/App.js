@@ -149,7 +149,12 @@ function App() {
   };
 
   if (isLoading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">Loading your tasks...</div>
+      </div>
+    );
   }
 
   return (

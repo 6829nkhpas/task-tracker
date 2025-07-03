@@ -35,8 +35,14 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask, searchQuery }) => {
     onUpdateTask(task.id, { completed: !task.completed });
   };
 
-  const handleDelete = () => {
-    onDeleteTask(task.id);
+  const handleDelete = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const confirmed = window.confirm('⚠️ Are you sure you want to delete this task?\n\nThis action cannot be undone.');
+    if (confirmed) {
+      onDeleteTask(task.id);
+    }
   };
 
   const handleStartEdit = () => {
