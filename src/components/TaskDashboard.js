@@ -3,6 +3,7 @@ import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import TaskFilter from './TaskFilter';
 import SearchBar from './SearchBar';
+import ExportImport from './ExportImport';
 
 const TaskDashboard = ({ 
   user, 
@@ -15,7 +16,9 @@ const TaskDashboard = ({
   currentFilter,
   onFilterChange,
   searchQuery,
-  onSearchChange
+  onSearchChange,
+  isDarkMode,
+  onImportTasks
 }) => {
   return (
     <div className="dashboard">
@@ -46,6 +49,10 @@ const TaskDashboard = ({
               tasks={tasks}
               currentFilter={currentFilter}
               onFilterChange={onFilterChange}
+            />
+            <ExportImport 
+              tasks={tasks}
+              onImportTasks={onImportTasks}
             />
           </div>
           

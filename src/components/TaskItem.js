@@ -67,35 +67,65 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask, searchQuery }) => {
     setIsEditing(false);
   };
 
+  // Handle keyboard navigation in edit mode
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      handleSaveEdit();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      handleCancelEdit();
+    }
+  };
+
   if (isEditing) {
     return (
-      <div className="task-item editing">
+      <div className="task-item editing" role="form" aria-label="Edit task">
         <div className="task-edit-form">
           <div className="form-group">
-            <label>Title *</label>
+            <label htmlFor={`edit-title-${task.id}`}>Title *</label>
             <input
+              id={`edit-title-${task.id}`}
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
               maxLength="100"
               className="edit-input"
+              autoFocus
+              aria-required="true"
+              aria-describedby={`title-error-${task.id}`}
             />
           </div>
           <div className="form-group">
-            <label>Description</label>
+            <label htmlFor={`edit-description-${task.id}`}>Description</label>
             <textarea
+              id={`edit-description-${task.id}`}
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
+              onKeyDown={handleKeyDown}
               maxLength="500"
               rows="3"
               className="edit-textarea"
+              aria-describedby={`description-hint-${task.id}`}
             />
+            <small id={`description-hint-${task.id}`} className="form-hint">
+              Press Ctrl+Enter to save, Escape to cancel
+            </small>
           </div>
           <div className="edit-actions">
-            <button onClick={handleSaveEdit} className="save-button">
+            <button 
+              onClick={handleSaveEdit} 
+              className="save-button"
+              aria-label="Save changes"
+            >
               Save
             </button>
-            <button onClick={handleCancelEdit} className="cancel-button">
+            <button 
+              onClick={handleCancelEdit} 
+              className="cancel-button"
+              aria-label="Cancel editing"
+            >
               Cancel
             </button>
           </div>
@@ -105,36 +135,59 @@ const TaskItem = ({ task, onUpdateTask, onDeleteTask, searchQuery }) => {
   }
 
   return (
-    <div className={`task-item ${task.completed ? 'completed' : 'pending'}`}>
+    <div 
+      className={`task-item ${task.completed ? 'completed' : 'pending'}`}
+      role="article"
+      aria-labelledby={`task-title-${task.id}`}
+      aria-describedby={`task-description-${task.id} task-meta-${task.id}`}
+    >
       <div className="task-content">
         <div className="task-header">
-          <h3 className="task-title">
+          <h3 id={`task-title-${task.id}`} className="task-title">
             {highlightSearchTerm(task.title, searchQuery)}
           </h3>
-          <span className={`task-status ${task.completed ? 'completed' : 'pending'}`}>
+          <span 
+            className={`task-status ${task.completed ? 'completed' : 'pending'}`}
+            aria-label={`Task status: ${task.completed ? 'Completed' : 'Pending'}`}
+          >
             {task.completed ? 'Completed' : 'Pending'}
           </span>
         </div>
         
         {task.description && (
-          <p className="task-description">
+          <p id={`task-description-${task.id}`} className="task-description">
             {highlightSearchTerm(task.description, searchQuery)}
           </p>
         )}
         
-        <div className="task-meta">
+        <div id={`task-meta-${task.id}`} className="task-meta">
           <span className="task-date">Created: {formatDate(task.createdAt)}</span>
         </div>
       </div>
       
-      <div className="task-actions">
-        <button onClick={handleToggleComplete} className="toggle-button">
+      <div className="task-actions" role="group" aria-label="Task actions">
+        <button 
+          onClick={handleToggleComplete} 
+          className="toggle-button"
+          aria-label={`Mark task as ${task.completed ? 'pending' : 'completed'}`}
+          title={`Mark task as ${task.completed ? 'pending' : 'completed'}`}
+        >
           {task.completed ? 'Mark Pending' : 'Mark Complete'}
         </button>
-        <button onClick={handleStartEdit} className="edit-button">
+        <button 
+          onClick={handleStartEdit} 
+          className="edit-button"
+          aria-label="Edit task"
+          title="Edit task"
+        >
           Edit
         </button>
-        <button onClick={handleDelete} className="delete-button">
+        <button 
+          onClick={handleDelete} 
+          className="delete-button"
+          aria-label="Delete task"
+          title="Delete task"
+        >
           Delete
         </button>
       </div>

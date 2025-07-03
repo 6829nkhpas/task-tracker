@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import TaskDashboard from './components/TaskDashboard';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
 import { addTask, updateTask, deleteTask, initializeSampleTasks } from './utils/localStorage';
 import './styles/App.css';
 
@@ -10,6 +11,29 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentFilter, setCurrentFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Keyboard shortcut handlers
+  const focusSearch = () => {
+    const searchInput = document.querySelector('input[placeholder*="Search"]');
+    if (searchInput) {
+      searchInput.focus();
+    }
+  };
+
+  const openExportMenu = () => {
+    const exportButton = document.querySelector('.dropdown-trigger');
+    if (exportButton) {
+      exportButton.click();
+    }
+  };
+
+  const addTaskFocus = () => {
+    const titleInput = document.querySelector('input[placeholder*="title"]');
+    if (titleInput) {
+      titleInput.focus();
+    }
+  };
 
   useEffect(() => {
     // Check if user is already logged in
@@ -22,8 +46,19 @@ function App() {
     const storedTasks = initializeSampleTasks();
     setTasks(storedTasks);
     
+    // Load theme preference
+    const savedTheme = localStorage.getItem('taskTrackerTheme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+    }
+    
     setIsLoading(false);
   }, []);
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
 
   const handleLogin = (username) => {
     localStorage.setItem('taskTrackerUser', username);
@@ -36,6 +71,20 @@ function App() {
     // Reset filters when logging out
     setCurrentFilter('all');
     setSearchQuery('');
+  };
+
+  const handleThemeToggle = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('taskTrackerTheme', newTheme ? 'dark' : 'light');
+  };
+
+  const handleImportTasks = (importedTasks) => {
+    // Replace current tasks with imported tasks
+    setTasks(importedTasks);
+    
+    // Save to localStorage
+    localStorage.setItem('taskTrackerTasks', JSON.stringify(importedTasks));
   };
 
   const handleAddTask = (taskData) => {
@@ -105,22 +154,49 @@ function App() {
 
   return (
     <div className="App">
+      {/* Skip to main content link for accessibility */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
+      {/* Keyboard shortcuts handler */}
+      <KeyboardShortcuts
+        onAddTask={addTaskFocus}
+        onToggleTheme={handleThemeToggle}
+        onFocusSearch={focusSearch}
+        onOpenExport={openExportMenu}
+      />
+
+      {/* Theme toggle button */}
+      <button 
+        className="theme-toggle"
+        onClick={handleThemeToggle}
+        aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+        title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+      >
+        {isDarkMode ? '☀️' : '🌙'}
+      </button>
+      
       {!user ? (
         <Login onLogin={handleLogin} />
       ) : (
-        <TaskDashboard 
-          user={user} 
-          onLogout={handleLogout}
-          tasks={tasks}
-          filteredTasks={getFilteredTasks()}
-          onAddTask={handleAddTask}
-          onUpdateTask={handleUpdateTask}
-          onDeleteTask={handleDeleteTask}
-          currentFilter={currentFilter}
-          onFilterChange={handleFilterChange}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-        />
+        <div id="main-content">
+          <TaskDashboard 
+            user={user} 
+            onLogout={handleLogout}
+            tasks={tasks}
+            filteredTasks={getFilteredTasks()}
+            onAddTask={handleAddTask}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
+            currentFilter={currentFilter}
+            onFilterChange={handleFilterChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            isDarkMode={isDarkMode}
+            onImportTasks={handleImportTasks}
+          />
+        </div>
       )}
     </div>
   );
