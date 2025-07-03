@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { exportTasks, importTasks, exportTasksAsCSV, createBackup, restoreFromBackup } from '../utils/exportImport';
 
-const ExportImport = ({ tasks, onImportTasks }) => {
+const ExportImport = ({ tasks = [], onImportTasks }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', type: '', show: false });
   const fileInputRef = useRef(null);
@@ -14,29 +14,39 @@ const ExportImport = ({ tasks, onImportTasks }) => {
   };
 
   const handleExportJSON = () => {
-    const result = exportTasks(tasks, 'my-tasks');
-    showFeedback(result.message, result.success ? 'success' : 'error');
+    try {
+      const result = exportTasks(tasks, 'my-tasks');
+      showFeedback(result.message, result.success ? 'success' : 'error');
+    } catch (error) {
+      showFeedback('Export failed: ' + error.message, 'error');
+    }
     setIsDropdownOpen(false);
   };
 
   const handleExportCSV = () => {
-    const result = exportTasksAsCSV(tasks, 'my-tasks');
-    showFeedback(result.message, result.success ? 'success' : 'error');
+    try {
+      const result = exportTasksAsCSV(tasks, 'my-tasks');
+      showFeedback(result.message, result.success ? 'success' : 'error');
+    } catch (error) {
+      showFeedback('Export failed: ' + error.message, 'error');
+    }
     setIsDropdownOpen(false);
   };
 
   const handleImportClick = () => {
-    fileInputRef.current?.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
     setIsDropdownOpen(false);
   };
 
   const handleFileImport = async (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     try {
       const result = await importTasks(file);
-      if (result.success) {
+      if (result.success && onImportTasks) {
         onImportTasks(result.data);
         showFeedback(result.message, 'success');
       }
@@ -45,22 +55,32 @@ const ExportImport = ({ tasks, onImportTasks }) => {
     }
 
     // Reset file input
-    event.target.value = '';
+    if (event.target) {
+      event.target.value = '';
+    }
   };
 
   const handleCreateBackup = () => {
-    const result = createBackup(tasks);
-    showFeedback(result.message, result.success ? 'success' : 'error');
+    try {
+      const result = createBackup(tasks);
+      showFeedback(result.message, result.success ? 'success' : 'error');
+    } catch (error) {
+      showFeedback('Backup failed: ' + error.message, 'error');
+    }
     setIsDropdownOpen(false);
   };
 
   const handleRestoreBackup = () => {
-    const result = restoreFromBackup();
-    if (result.success) {
-      onImportTasks(result.data);
-      showFeedback(result.message, 'success');
-    } else {
-      showFeedback(result.message, 'error');
+    try {
+      const result = restoreFromBackup();
+      if (result.success && onImportTasks) {
+        onImportTasks(result.data);
+        showFeedback(result.message, 'success');
+      } else {
+        showFeedback(result.message, 'error');
+      }
+    } catch (error) {
+      showFeedback('Restore failed: ' + error.message, 'error');
     }
     setIsDropdownOpen(false);
   };

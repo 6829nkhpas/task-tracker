@@ -161,7 +161,6 @@ const TaskForm = ({ onAddTask }) => {
             </>
           ) : (
             <>
-              <span className="sr-only">Add new task</span>
               ➕ Add Task
             </>
           )}

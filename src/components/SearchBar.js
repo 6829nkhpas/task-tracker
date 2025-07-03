@@ -25,46 +25,30 @@ const SearchBar = ({ searchQuery, onSearchChange, totalTasks, filteredCount }) =
   const hasActiveSearch = searchQuery.trim().length > 0;
 
   return (
-    <div className="search-bar-container">
-      <div className="search-bar-header">
-        <h2>Search Tasks</h2>
-        {hasActiveSearch && (
-          <span className="search-results">
-            {filteredCount} of {totalTasks} tasks match your search
-          </span>
-        )}
-      </div>
-      
-      <div className="search-input-container">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            placeholder="Search tasks by title or description..."
-            value={localQuery}
-            onChange={(e) => setLocalQuery(e.target.value)}
-            className="search-input"
-          />
-          <div className="search-input-icons">
-            {hasActiveSearch ? (
-              <button 
-                onClick={handleClear}
-                className="clear-search-button"
-                title="Clear search"
-              >
-                ✕
-              </button>
-            ) : (
-              <span className="search-icon">🔍</span>
-            )}
-          </div>
+    <div className="search-container">
+      <div className="search-icon">🔍</div>
+      <input
+        type="text"
+        placeholder="Search tasks by title or description..."
+        value={localQuery}
+        onChange={(e) => setLocalQuery(e.target.value)}
+        className="search-input"
+      />
+      {hasActiveSearch && (
+        <button 
+          onClick={handleClear}
+          className="clear-search-button"
+          title="Clear search"
+          aria-label="Clear search"
+        >
+          ✕
+        </button>
+      )}
+      {hasActiveSearch && (
+        <div className="search-stats">
+          📊 {filteredCount} of {totalTasks} tasks found
         </div>
-        
-        {hasActiveSearch && (
-          <div className="search-info">
-            <span className="search-query">Searching for: "{searchQuery}"</span>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import TaskDashboard from './components/TaskDashboard';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
+import ErrorBoundary from './components/ErrorBoundary';
 import { addTask, updateTask, deleteTask, initializeSampleTasks } from './utils/localStorage';
 import './styles/App.css';
 
@@ -155,55 +156,51 @@ function App() {
         <div className="loading-text">Loading your tasks...</div>
       </div>
     );
-  }
+  }  return (
+    <ErrorBoundary>
+      <div className="App">
 
-  return (
-    <div className="App">
-      {/* Skip to main content link for accessibility */}
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
+        {/* Keyboard shortcuts handler */}
+        <KeyboardShortcuts
+          onAddTask={addTaskFocus}
+          onToggleTheme={handleThemeToggle}
+          onFocusSearch={focusSearch}
+          onOpenExport={openExportMenu}
+        />
 
-      {/* Keyboard shortcuts handler */}
-      <KeyboardShortcuts
-        onAddTask={addTaskFocus}
-        onToggleTheme={handleThemeToggle}
-        onFocusSearch={focusSearch}
-        onOpenExport={openExportMenu}
-      />
+        {/* Theme toggle button */}
+        <button 
+          className="theme-toggle"
+          onClick={handleThemeToggle}
+          aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+          title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+        >
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
 
-      {/* Theme toggle button */}
-      <button 
-        className="theme-toggle"
-        onClick={handleThemeToggle}
-        aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-        title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-      >
-        {isDarkMode ? '☀️' : '🌙'}
-      </button>
-      
-      {!user ? (
-        <Login onLogin={handleLogin} />
-      ) : (
-        <div id="main-content">
-          <TaskDashboard 
-            user={user} 
-            onLogout={handleLogout}
-            tasks={tasks}
-            filteredTasks={getFilteredTasks()}
-            onAddTask={handleAddTask}
-            onUpdateTask={handleUpdateTask}
-            onDeleteTask={handleDeleteTask}
-            currentFilter={currentFilter}
-            onFilterChange={handleFilterChange}
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            isDarkMode={isDarkMode}
-            onImportTasks={handleImportTasks}
-          />
-        </div>
-      )}
-    </div>
+        {!user ? (
+          <Login onLogin={handleLogin} />
+        ) : (
+          <div id="main-content">
+            <TaskDashboard 
+              user={user} 
+              onLogout={handleLogout}
+              tasks={tasks}
+              filteredTasks={getFilteredTasks()}
+              onAddTask={handleAddTask}
+              onUpdateTask={handleUpdateTask}
+              onDeleteTask={handleDeleteTask}
+              currentFilter={currentFilter}
+              onFilterChange={handleFilterChange}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              isDarkMode={isDarkMode}
+              onImportTasks={handleImportTasks}
+            />
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

@@ -3,6 +3,7 @@ import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import TaskFilter from './TaskFilter';
 import SearchBar from './SearchBar';
+import TaskStats from './TaskStats';
 import ExportImport from './ExportImport';
 
 const TaskDashboard = ({ 
@@ -37,6 +38,8 @@ const TaskDashboard = ({
       <main className="dashboard-main">
         <div className="dashboard-content">
           <TaskForm onAddTask={onAddTask} />
+          
+          <TaskStats tasks={tasks} />
           
           <div className="controls-section">
             <SearchBar 
