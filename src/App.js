@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import Login from './components/Login';
-import TaskDashboard from './components/TaskDashboard';
-import KeyboardShortcuts from './components/KeyboardShortcuts';
-import ErrorBoundary from './components/ErrorBoundary';
-import { addTask, updateTask, deleteTask, initializeSampleTasks } from './utils/localStorage';
-import './styles/App.css';
+import React, { useState, useEffect } from "react";
+import Login from "./components/Login";
+import TaskDashboard from "./components/TaskDashboard";
+import KeyboardShortcuts from "./components/KeyboardShortcuts";
+import ErrorBoundary from "./components/ErrorBoundary";
+import {
+  addTask,
+  updateTask,
+  deleteTask,
+  initializeSampleTasks,
+} from "./utils/localStorage";
+import "./styles/App.css";
 
 function App() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentFilter, setCurrentFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [currentFilter, setCurrentFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Keyboard shortcut handlers
@@ -23,7 +28,7 @@ function App() {
   };
 
   const openExportMenu = () => {
-    const exportButton = document.querySelector('.dropdown-trigger');
+    const exportButton = document.querySelector(".dropdown-trigger");
     if (exportButton) {
       exportButton.click();
     }
@@ -38,74 +43,94 @@ function App() {
 
   useEffect(() => {
     // Check if user is already logged in
-    const storedUser = localStorage.getItem('taskTrackerUser');
+    const storedUser = localStorage.getItem("taskTrackerUser");
     if (storedUser) {
       setUser(storedUser);
+      // Load tasks for this user
+      const storedTasks = initializeSampleTasks(storedUser);
+      setTasks(storedTasks);
     }
-    
-    // Load tasks from localStorage (with sample data if none exist)
-    const storedTasks = initializeSampleTasks();
-    setTasks(storedTasks);
-    
     // Load theme preference
-    const savedTheme = localStorage.getItem('taskTrackerTheme');
-    if (savedTheme === 'dark') {
+    const savedTheme = localStorage.getItem("taskTrackerTheme");
+    if (savedTheme === "dark") {
       setIsDarkMode(true);
     }
-    
     setIsLoading(false);
   }, []);
 
+  // When user changes (login/logout), load their tasks
+  useEffect(() => {
+    if (user) {
+      const userTasks = initializeSampleTasks(user);
+      setTasks(userTasks);
+    } else {
+      setTasks([]);
+    }
+  }, [user]);
+
   // Apply theme to document
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDarkMode ? "dark" : "light"
+    );
   }, [isDarkMode]);
 
   const handleLogin = (username) => {
-    localStorage.setItem('taskTrackerUser', username);
+    localStorage.setItem("taskTrackerUser", username);
     setUser(username);
+    // Load tasks for this user
+    const userTasks = initializeSampleTasks(username);
+    setTasks(userTasks);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('taskTrackerUser');
+    localStorage.removeItem("taskTrackerUser");
     setUser(null);
     // Reset filters when logging out
-    setCurrentFilter('all');
-    setSearchQuery('');
+    setCurrentFilter("all");
+    setSearchQuery("");
   };
 
   const handleThemeToggle = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
-    localStorage.setItem('taskTrackerTheme', newTheme ? 'dark' : 'light');
+    localStorage.setItem("taskTrackerTheme", newTheme ? "dark" : "light");
   };
 
   const handleImportTasks = (importedTasks) => {
     // Replace current tasks with imported tasks
     setTasks(importedTasks);
-    
-    // Save to localStorage
-    localStorage.setItem('taskTrackerTasks', JSON.stringify(importedTasks));
+    // Save to localStorage for this user
+    if (user) {
+      localStorage.setItem(
+        `taskTrackerTasks_${user}`,
+        JSON.stringify(importedTasks)
+      );
+    }
   };
 
   const handleAddTask = (taskData) => {
-    const newTask = addTask(taskData);
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    if (!user) return null;
+    const newTask = addTask(user, taskData);
+    setTasks((prevTasks) => [...prevTasks, newTask]);
     return newTask;
   };
 
   const handleUpdateTask = (taskId, updates) => {
-    const updatedTask = updateTask(taskId, updates);
-    setTasks(prevTasks => prevTasks.map(task => 
-      task.id === taskId ? updatedTask : task
-    ));
+    if (!user) return null;
+    const updatedTask = updateTask(user, taskId, updates);
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
+    );
     return updatedTask;
   };
 
   const handleDeleteTask = (taskId) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      deleteTask(taskId);
-      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    if (!user) return false;
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      deleteTask(user, taskId);
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
       return true;
     }
     return false;
@@ -125,13 +150,13 @@ function App() {
 
     // Apply filter
     switch (currentFilter) {
-      case 'completed':
-        filteredTasks = filteredTasks.filter(task => task.completed);
+      case "completed":
+        filteredTasks = filteredTasks.filter((task) => task.completed);
         break;
-      case 'pending':
-        filteredTasks = filteredTasks.filter(task => !task.completed);
+      case "pending":
+        filteredTasks = filteredTasks.filter((task) => !task.completed);
         break;
-      case 'all':
+      case "all":
       default:
         // No filtering needed
         break;
@@ -140,9 +165,10 @@ function App() {
     // Apply search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filteredTasks = filteredTasks.filter(task => 
-        task.title.toLowerCase().includes(query) ||
-        task.description.toLowerCase().includes(query)
+      filteredTasks = filteredTasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(query) ||
+          task.description.toLowerCase().includes(query)
       );
     }
 
@@ -156,10 +182,10 @@ function App() {
         <div className="loading-text">Loading your tasks...</div>
       </div>
     );
-  }  return (
+  }
+  return (
     <ErrorBoundary>
       <div className="App">
-
         {/* Keyboard shortcuts handler */}
         <KeyboardShortcuts
           onAddTask={addTaskFocus}
@@ -169,21 +195,21 @@ function App() {
         />
 
         {/* Theme toggle button */}
-        <button 
+        <button
           className="theme-toggle"
           onClick={handleThemeToggle}
-          aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-          title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+          aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+          title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
         >
-          {isDarkMode ? '☀️' : '🌙'}
+          {isDarkMode ? "☀️" : "🌙"}
         </button>
 
         {!user ? (
           <Login onLogin={handleLogin} />
         ) : (
           <div id="main-content">
-            <TaskDashboard 
-              user={user} 
+            <TaskDashboard
+              user={user}
               onLogout={handleLogout}
               tasks={tasks}
               filteredTasks={getFilteredTasks()}
