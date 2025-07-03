@@ -69,4 +69,11 @@ A modern, sleek personal task management application built with React featuring 
 - **Layout**: CSS Grid and Flexbox for responsive design
 - **Effects**: Glassmorphism with backdrop blur and subtle shadows
 
+++Live link
 
+++ Screenshorts
+
+![alt text](<public/Screenshot 2025-07-03 121900.png>)
+![alt text](<public/Screenshot 2025-07-03 122221.png>)
+![alt text](<public/Screenshot 2025-07-03 122235.png>)
+![alt text](<public/Screenshot 2025-07-03 122305.png>)
