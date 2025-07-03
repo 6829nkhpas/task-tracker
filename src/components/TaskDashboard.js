@@ -1,25 +1,26 @@
-import React from 'react';
-import TaskForm from './TaskForm';
-import TaskList from './TaskList';
-import TaskFilter from './TaskFilter';
-import SearchBar from './SearchBar';
-import TaskStats from './TaskStats';
-import ExportImport from './ExportImport';
+import React from "react";
+import TaskForm from "./TaskForm";
+import TaskList from "./TaskList";
+import TaskFilter from "./TaskFilter";
+import SearchBar from "./SearchBar";
+import TaskStats from "./TaskStats";
+import ExportImport from "./ExportImport";
 
-const TaskDashboard = ({ 
-  user, 
-  onLogout, 
-  tasks, 
+const TaskDashboard = ({
+  user,
+  onLogout,
+  tasks,
   filteredTasks,
-  onAddTask, 
-  onUpdateTask, 
+  onAddTask,
+  onUpdateTask,
   onDeleteTask,
   currentFilter,
   onFilterChange,
   searchQuery,
   onSearchChange,
   isDarkMode,
-  onImportTasks
+  onImportTasks,
+  onThemeToggle,
 }) => {
   return (
     <div className="dashboard">
@@ -28,6 +29,14 @@ const TaskDashboard = ({
           <h1>Task Tracker</h1>
           <div className="user-info">
             <span className="user-welcome">Welcome, {user}!</span>
+            <button
+              className="theme-toggle header-theme-toggle"
+              onClick={onThemeToggle}
+              aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
             <button onClick={onLogout} className="logout-button">
               Logout
             </button>
@@ -38,30 +47,27 @@ const TaskDashboard = ({
       <main className="dashboard-main">
         <div className="dashboard-content">
           <TaskForm onAddTask={onAddTask} />
-          
+
           <TaskStats tasks={tasks} />
-          
+
           <div className="controls-section">
-            <SearchBar 
+            <SearchBar
               searchQuery={searchQuery}
               onSearchChange={onSearchChange}
               totalTasks={tasks.length}
               filteredCount={filteredTasks.length}
             />
-            <TaskFilter 
+            <TaskFilter
               tasks={tasks}
               currentFilter={currentFilter}
               onFilterChange={onFilterChange}
             />
-            <ExportImport 
-              tasks={tasks}
-              onImportTasks={onImportTasks}
-            />
+            <ExportImport tasks={tasks} onImportTasks={onImportTasks} />
           </div>
-          
-          <TaskList 
-            tasks={filteredTasks} 
-            onUpdateTask={onUpdateTask} 
+
+          <TaskList
+            tasks={filteredTasks}
+            onUpdateTask={onUpdateTask}
             onDeleteTask={onDeleteTask}
             currentFilter={currentFilter}
             searchQuery={searchQuery}

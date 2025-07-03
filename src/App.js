@@ -194,16 +194,6 @@ function App() {
           onOpenExport={openExportMenu}
         />
 
-        {/* Theme toggle button */}
-        <button
-          className="theme-toggle"
-          onClick={handleThemeToggle}
-          aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-          title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-        >
-          {isDarkMode ? "☀️" : "🌙"}
-        </button>
-
         {!user ? (
           <Login onLogin={handleLogin} />
         ) : (
@@ -222,6 +212,7 @@ function App() {
               onSearchChange={handleSearchChange}
               isDarkMode={isDarkMode}
               onImportTasks={handleImportTasks}
+              onThemeToggle={handleThemeToggle}
             />
           </div>
         )}
